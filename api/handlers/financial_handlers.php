@@ -57,7 +57,8 @@ function handle_get_financial_dashboard_data($conn, $data) {
 
 function handle_get_student_payments($conn, $data) {
     $studentId = $data['studentId'];
-    $stmt = $conn->prepare("SELECT * FROM payments WHERE studentId = ? ORDER BY referenceDate DESC");
+    // ALTERAÇÃO AQUI: Mudado de DESC para ASC para ordem crescente (antigas primeiro)
+    $stmt = $conn->prepare("SELECT * FROM payments WHERE studentId = ? ORDER BY referenceDate ASC");
     $stmt->execute([$studentId]);
     $payments = $stmt->fetchAll();
     send_response(true, ['payments' => $payments]);
