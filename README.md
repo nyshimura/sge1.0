@@ -89,7 +89,7 @@ Após a instalação, você pode acessar o sistema com as credenciais padrão:
 
 * **Perfil Administrador:**
     * **Usuário:** `admin@admin`
-    * **Senha:** `admin`
+    * **Senha:** `admin123`
 
 * **Configurações:**
   * **Configure sua api do gemini**
