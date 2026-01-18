@@ -84,7 +84,6 @@ $actionMap = [
     'getPaymentHistory' => __DIR__ . '/handlers/financial_handlers.php',
     'getStudentPayments' => __DIR__ . '/handlers/financial_handlers.php',
     'generateReceiptPdf' => __DIR__ . '/handlers/receipt_handler.php',
-    'generateReceipt' => __DIR__ . '/handlers/receipt_handler.php', // <--- ADICIONADO AQUI
     
     // Certificates
     'generateCertificate' => __DIR__ . '/handlers/certificate_handler.php',

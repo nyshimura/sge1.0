@@ -2,8 +2,8 @@
 import { appState } from '../../state.js';
 
 export function renderStudentFinancialHistory(studentId, studentPayments, isAdminView = false, allowActions = false) {
-    // Mantendo a ordenação original do seu arquivo (Decrescente)
-    studentPayments.sort((a, b) => b.referenceDate.localeCompare(a.referenceDate));
+    // ALTERAÇÃO AQUI: Mudado para a.localeCompare(b) para ordem crescente
+    studentPayments.sort((a, b) => a.referenceDate.localeCompare(b.referenceDate));
 
     const title = isAdminView ? "Histórico Financeiro" : "Meu Histórico Financeiro";
 
@@ -16,42 +16,11 @@ export function renderStudentFinancialHistory(studentId, studentPayments, isAdmi
         bulkPayButton = `<div style="margin-bottom: 1rem;"><button class="action-button" onclick="window.AppHandlers.handleInitiatePixPayment([${pendingIds.join(',')}])">Pagar todas as pendências com PIX</button></div>`;
     }
 
-    // --- ALTERAÇÃO: Estilos Injetados para Responsividade ---
-    const customStyles = `
-        <style>
-            .responsive-table-container {
-                width: 100%;
-                overflow-x: auto; /* Habilita rolagem horizontal */
-                -webkit-overflow-scrolling: touch; /* Rolagem suave no mobile */
-                margin-bottom: 1rem;
-                border: 1px solid var(--border-color, #eee); /* Opcional: borda para delimitar a área de rolagem */
-                border-radius: 8px;
-            }
-            .responsive-table-container table {
-                width: 100%;
-                min-width: 800px; /* Força uma largura mínima para garantir que o botão não quebre/suma */
-                border-collapse: collapse;
-            }
-            .responsive-table-container th, 
-            .responsive-table-container td {
-                white-space: nowrap; /* Impede que o texto quebre e desalinhe a linha */
-                padding: 12px;
-                vertical-align: middle;
-            }
-            .responsive-table-container .action-button {
-                width: auto; /* Garante que o botão tenha largura automática */
-                padding: 8px 16px;
-                white-space: nowrap;
-            }
-        </style>
-    `;
-
     return `
-        ${customStyles}
         <h4 class="card-title">${title}</h4>
         ${bulkPayButton}
         ${studentPayments.length === 0 ? '<p>Nenhum histórico de pagamento encontrado.</p>' : `
-            <div class="table-wrapper responsive-table-container">
+            <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
