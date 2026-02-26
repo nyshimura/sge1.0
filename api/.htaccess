@@ -1,0 +1,18 @@
+# .htaccess for API Directory
+RewriteEngine On
+RewriteBase /api/
+
+# Prevent Directory Listing
+Options -Indexes
+
+# Security: Deny direct access to sensitive directories and files
+<FilesMatch "(config\.php|auto_migrate\.php)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect directories
+RewriteRule ^(handlers|helpers|utils|phpmailer|cron|libs|fpdf)/ - [F]
+
+# Allow access only to index.php
+# (This assumes verify logic is either via index.php action or separate verified folder)
