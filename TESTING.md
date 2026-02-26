@@ -4,6 +4,7 @@ Este guia explica como testar as melhorias feitas no backend PHP para garantir q
 
 ## 1. Configuração do Banco de Dados
 
+### Instalação Nova
 Para testar o sistema, você precisará de um banco de dados MySQL configurado.
 
 1.  Acesse o **Painel do Hostinger**.
@@ -11,6 +12,13 @@ Para testar o sistema, você precisará de um banco de dados MySQL configurado.
 3.  Anote o **Nome do Banco**, **Usuário** e **Senha**.
 4.  Abra o **phpMyAdmin**.
 5.  Importe o arquivo `schema.sql` (localizado na raiz do projeto) para criar as tabelas necessárias.
+
+### Atualização (Se já tiver dados)
+Se você já possui o banco de dados instalado, execute o script de migração para adicionar as tabelas de Eventos e LGPD:
+1.  Abra o **phpMyAdmin**.
+2.  Selecione seu banco de dados.
+3.  Vá na aba **SQL**.
+4.  Cole o conteúdo do arquivo `api/migrations/v2_lgpd_events.sql` e execute.
 
 ## 2. Configuração do Backend (API)
 
@@ -44,21 +52,36 @@ Você pode testar a API diretamente usando ferramentas como **Postman** ou o pr�
         ```
     *   **Resultado Esperado**: Um JSON com `success: true` e dados do usuário.
 
-### Teste de Segurança (Arquivos Protegidos)
-Tente acessar arquivos sensíveis diretamente pelo navegador:
-*   `https://seu-dominio.com/api/config.php` -> Deve retornar **403 Forbidden** (graças ao `.htaccess`).
-*   `https://seu-dominio.com/api/handlers/auth_handlers.php` -> Deve retornar **403 Forbidden**.
+### Teste de Eventos e Termos (Novo)
+1.  **Criar Evento (POST)** (Requer Login Admin):
+    *   URL: `.../api/?action=createEvent`
+    *   Body:
+        ```json
+        {
+            "title": "Apresentação de Final de Ano",
+            "eventDate": "2023-12-20 19:00:00",
+            "location": "Teatro Municipal",
+            "termText": "Eu, responsável, autorizo a participação..."
+        }
+        ```
+2.  **Listar Eventos (GET)**:
+    *   URL: `.../api/?action=listEvents`
+3.  **Inscrever e Aceitar Termo (POST)** (Requer Login Aluno):
+    *   URL: `.../api/?action=enrollEvent`
+    *   Body: `{"eventId": 1, "acceptTerms": true}`
 
-## 4. Testando o Frontend
-
-1.  Acesse a URL principal do sistema: `https://seu-dominio.com/` (ou `https://seu-dominio.com/sge/`).
-2.  Faça login com o usuário admin.
-3.  Navegue pelo Dashboard e verifique se os dados (alunos, cursos) estão carregando.
-4.  Acesse a aba **Perfil** e tente atualizar seus dados.
+### Teste de LGPD (Auditoria)
+1.  Realize ações como Login, Busca de Usuários ou Visualização de Perfil.
+2.  No banco de dados (phpMyAdmin), verifique a tabela `audit_logs`. Ela deve conter registros dessas ações com o IP e User Agent.
 
 ## Resumo das Mudanças Técnicas
 
-*   **Estrutura Modular**: O arquivo `api/index.php` agora gerencia todas as requisições de forma centralizada, melhorando a segurança e organização.
-*   **Conexão Segura**: A conexão com o banco de dados foi movida para `api/utils/db.php` e usa PDO para prevenir injeção de SQL.
-*   **Proteção de Arquivos**: Arquivos `.htaccess` foram adicionados para impedir acesso direto a scripts PHP sensíveis e arquivos de configuração.
-*   **Respostas Padronizadas**: Todas as respostas da API agora seguem o formato JSON padrão `{ "success": true/false, "data": { ... } }`.
+*   **Estrutura Modular**: O arquivo `api/index.php` agora gerencia todas as requisições de forma centralizada.
+*   **LGPD**:
+    *   Tabela `audit_logs` registra quem acessou o quê.
+    *   Handlers de Login e Usuário agora registram acessos sensíveis.
+*   **Novas Funcionalidades**:
+    *   Módulo de **Eventos** (`api/handlers/event_handlers.php`) para gerenciar apresentações e turnês.
+    *   Controle de **Termos de Responsabilidade** digitais para eventos.
+*   **Conexão Segura**: A conexão com o banco de dados foi movida para `api/utils/db.php`.
+*   **Segurança**: Arquivos `.htaccess` protegem o código fonte.

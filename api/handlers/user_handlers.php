@@ -8,6 +8,8 @@ if (!defined('ABSPATH')) {
     // define('ABSPATH', dirname(__FILE__) . '/');
 }
 
+require_once __DIR__ . '/../utils/audit.php';
+
 // Helper to validate date format YYYY-MM-DD
 function validateDate($date, $format = 'Y-m-d') {
     $d = DateTime::createFromFormat($format, $date);
@@ -116,6 +118,12 @@ function handle_get_filtered_users($conn, $data) {
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Log sensitive search if search term used
+        if (!empty($search) && isset($_SESSION['user_id'])) {
+             AuditLogger::log($conn, $_SESSION['user_id'], 'SEARCH_USERS', ['term' => $search]);
+        }
+
         send_response(true, ['users' => $users]);
     } catch (PDOException $e) {
         error_log("Database Error (Filtered Users): " . $e->getMessage());
@@ -145,6 +153,9 @@ function handle_update_user_role($conn, $data) {
         $success = $stmt->execute([$newRole, $userId]);
 
         if ($success) {
+            if (isset($_SESSION['user_id'])) {
+                AuditLogger::log($conn, $_SESSION['user_id'], 'UPDATE_ROLE', ['target_id' => $userId, 'new_role' => $newRole]);
+            }
             send_response(true, ['message' => 'User role updated successfully.']);
         } else {
             send_response(false, ['message' => 'Failed to update role.'], 500);
@@ -208,6 +219,13 @@ function handle_get_profile_data($conn, $data) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user) {
+            // Log access to profile (LGPD)
+            if (session_status() == PHP_SESSION_NONE) session_start();
+            $viewerId = $_SESSION['user_id'] ?? 0;
+            if ($viewerId > 0 && $viewerId != $userId) { // Log only if viewing someone else
+                 AuditLogger::log($conn, $viewerId, 'VIEW_PROFILE', ['target_id' => $userId]);
+            }
+
             $stmtEnroll = $conn->prepare("SELECT e.*, c.name as courseName FROM enrollments e JOIN courses c ON e.courseId = c.id WHERE e.studentId = ?");
             $stmtEnroll->execute([$userId]);
             $enrollments = $stmtEnroll->fetchAll(PDO::FETCH_ASSOC);

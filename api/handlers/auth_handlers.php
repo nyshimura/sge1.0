@@ -12,6 +12,8 @@ if (!defined('ABSPATH')) {
 // Helper functions (could be moved to a shared helper file)
 // send_response is available globally via api/utils/response.php
 
+require_once __DIR__ . '/../utils/audit.php';
+
 /**
  * Handles user login.
  */
@@ -44,7 +46,7 @@ function handle_login($conn, $params) {
             session_regenerate_id(true);
 
             // Log login
-            // error_log("[AUTH] Login successful for user ID: " . $user['id']);
+            AuditLogger::log($conn, $user['id'], 'LOGIN');
 
             send_response(true, [
                 'message' => 'Login successful!',
@@ -63,6 +65,17 @@ function handle_login($conn, $params) {
         error_log("Database Error (Login): " . $e->getMessage());
         send_response(false, ['message' => 'Database error during login.'], 500);
     }
+}
+
+function handle_logout($conn, $params) {
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (isset($_SESSION['user_id'])) {
+        AuditLogger::log($conn, $_SESSION['user_id'], 'LOGOUT');
+    }
+    session_destroy();
+    send_response(true, ['message' => 'Logged out successfully.']);
 }
 
 /**
@@ -305,10 +318,4 @@ function handle_reset_password($conn, $params) {
         send_response(false, ['message' => 'An error occurred.'], 500);
     }
 }
-function handle_logout($conn, $params) {
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
-    session_destroy();
-    send_response(true, ['message' => 'Logged out successfully.']);
-}
+// handle_logout is already defined above

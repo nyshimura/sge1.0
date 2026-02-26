@@ -64,6 +64,9 @@ $handlers = [
     ],
     'ai' => [
         'generateDescriptionAI', 'generateAiDescription'
+    ],
+    'event' => [
+        'createEvent', 'listEvents', 'getEventDetails', 'enrollEvent', 'listEventParticipants'
     ]
 ];
 
