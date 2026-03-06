@@ -1,0 +1,24 @@
+# .htaccess for Root Directory
+
+# Enable Rewrite Engine
+RewriteEngine On
+
+# Prevent Directory Listing
+Options -Indexes
+
+# Security: Deny access to sensitive files
+<FilesMatch "\.(sql|log|bak|ini|sh|env|md)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer\.json|package\.json|metadata\.json|tsconfig\.json)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Redirect all missing files/directories to index.php (Front Controller pattern)
+# This allows the app to work in subdirectories like /sge/ without RewriteBase
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
