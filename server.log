@@ -1,0 +1,7 @@
+[Fri Mar  6 01:57:35 2026] PHP 8.3.6 Development Server (http://localhost:8080) started
+[Fri Mar  6 01:58:09 2026] [::1]:48780 Accepted
+[Fri Mar  6 01:58:09 2026] [::1]:48780 [200]: GET /?p=login
+[Fri Mar  6 01:58:09 2026] [::1]:48780 Closing
+[Fri Mar  6 01:58:37 2026] [::1]:34242 Accepted
+[Fri Mar  6 01:58:37 2026] [::1]:34242 [200]: GET /?p=login
+[Fri Mar  6 01:58:37 2026] [::1]:34242 Closing
