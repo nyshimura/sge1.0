@@ -2,7 +2,6 @@
 
 # Enable Rewrite Engine
 RewriteEngine On
-RewriteBase /
 
 # Prevent Directory Listing
 Options -Indexes
@@ -18,7 +17,8 @@ Options -Indexes
     Deny from all
 </FilesMatch>
 
-# Serve index.html for non-existent files (SPA fallback if needed)
+# Redirect all missing files/directories to index.php (Front Controller pattern)
+# This allows the app to work in subdirectories like /sge/ without RewriteBase
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [L]
+RewriteRule ^ index.php [L]

@@ -70,10 +70,31 @@ if (array_key_exists($page, $routes)) {
     $viewFile = 'views/404.php';
 }
 
-// Load the requested view
-if (file_exists($viewFile)) {
-    require $viewFile;
-} else {
-    echo "<h1>Erro</h1>";
-    echo "<p>Arquivo de view não encontrado: " . htmlspecialchars($viewFile) . "</p>";
+// Load the requested view with a global try...catch for database errors (Error 500 mitigation)
+try {
+    if (file_exists($viewFile)) {
+        require $viewFile;
+    } else {
+        echo "<h1>Erro do Sistema</h1>";
+        echo "<p>Arquivo de visualização não encontrado: " . htmlspecialchars($viewFile) . "</p>";
+        echo "<p>Por favor, verifique se todos os arquivos foram enviados corretamente para o servidor Hostinger.</p>";
+    }
+} catch (PDOException $e) {
+    // Catch database connection or query errors
+    http_response_code(500);
+    echo "<div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24; border-radius: 5px;'>";
+    echo "<h2 style='margin-top: 0;'>Erro de Conexão com o Banco de Dados</h2>";
+    echo "<p>Ocorreu um erro ao tentar se conectar ao banco de dados ou executar uma consulta. Isso é comum após enviar os arquivos pela primeira vez para o Hostinger.</p>";
+    echo "<p><strong>O que fazer:</strong></p>";
+    echo "<ol>";
+    echo "<li>Abra o arquivo <code>api/config.php</code> e verifique se as constantes <code>DB_HOST</code>, <code>DB_USER</code>, <code>DB_PASS</code> e <code>DB_NAME</code> estão corretas para o seu banco no Hostinger.</li>";
+    echo "<li>Verifique se você importou o arquivo <code>schema.sql</code> no seu phpMyAdmin.</li>";
+    echo "</ol>";
+    echo "<p style='font-size: 0.8em; color: #555; margin-top: 20px;'><strong>Detalhes Técnicos (Para o Suporte):</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "</div>";
+} catch (Exception $e) {
+    // Catch other general errors
+    http_response_code(500);
+    echo "<h1>Erro Interno do Servidor (500)</h1>";
+    echo "<p>Um erro inesperado ocorreu. Detalhes: " . htmlspecialchars($e->getMessage()) . "</p>";
 }
