@@ -48,6 +48,7 @@ $routes = [
     'teacher_dashboard' => ['file' => 'views/teacher/dashboard.php', 'roles' => ['teacher']],
     'student_payments' => ['file' => 'views/student/payments.php', 'roles' => ['student']],
     'teacher_attendance' => ['file' => 'views/teacher/attendance.php', 'roles' => ['teacher', 'admin', 'superadmin']],
+    'admin_courses' => ['file' => 'views/admin/courses.php', 'roles' => ['admin', 'superadmin']],
     'legacy_app' => ['file' => 'views/legacy_spa_wrapper.php', 'roles' => ['all']], // Catch-all for missing features
 ];
 

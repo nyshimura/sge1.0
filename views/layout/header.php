@@ -29,7 +29,7 @@
 
                             <?php if ($_SESSION['user_role'] === 'admin' || $_SESSION['user_role'] === 'superadmin'): ?>
                                 <a href="?p=legacy_app#students" class="text-indigo-100 hover:bg-indigo-500 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Alunos</a>
-                                <a href="?p=legacy_app#courses" class="text-indigo-100 hover:bg-indigo-500 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Cursos</a>
+                                <a href="?p=admin_courses" class="text-indigo-100 hover:bg-indigo-500 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Cursos</a>
                                 <a href="?p=legacy_app#financial" class="text-indigo-100 hover:bg-indigo-500 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Financeiro</a>
                             <?php endif; ?>
 
