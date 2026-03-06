@@ -81,7 +81,8 @@ try {
     }
 } catch (PDOException $e) {
     // Catch database connection or query errors
-    http_response_code(500);
+    // Use 200 (OK) so Hostinger/Chrome doesn't block the HTML message with a generic error page.
+    http_response_code(200);
     echo "<div style='font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24; border-radius: 5px;'>";
     echo "<h2 style='margin-top: 0;'>Erro de Conexão com o Banco de Dados</h2>";
     echo "<p>Ocorreu um erro ao tentar se conectar ao banco de dados ou executar uma consulta. Isso é comum após enviar os arquivos pela primeira vez para o Hostinger.</p>";
@@ -94,7 +95,13 @@ try {
     echo "</div>";
 } catch (Exception $e) {
     // Catch other general errors
-    http_response_code(500);
-    echo "<h1>Erro Interno do Servidor (500)</h1>";
+    http_response_code(200);
+    echo "<h1>Erro Interno do Sistema</h1>";
     echo "<p>Um erro inesperado ocorreu. Detalhes: " . htmlspecialchars($e->getMessage()) . "</p>";
+} catch (Error $e) {
+    // Catch fatal PHP errors (e.g., missing functions, syntax errors in views)
+    http_response_code(200);
+    echo "<h1>Erro Fatal (PHP)</h1>";
+    echo "<p>Detalhes: " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p>Arquivo: " . htmlspecialchars($e->getFile()) . " na linha " . $e->getLine() . "</p>";
 }
